@@ -5,7 +5,7 @@ const currTime = Number(Math.round(new Date().getTime() / 1000));
 
 module.exports = async function (deployer, network, accounts) {
   await deployer.deploy(Unity);
-  await deployer.deploy(Amnesty);
+  //await deployer.deploy(Amnesty);
 
   // let unityinstance = await Unity.deployed();
   // let amnestyInstance = await Amnesty.deployed();

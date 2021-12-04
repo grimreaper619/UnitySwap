@@ -52,8 +52,8 @@ contract UnitySwap is Context, IERC20, Ownable {
     bool inSwapAndLiquify;
     bool public swapAndLiquifyEnabled = true;
 
-    uint256 public _maxTxAmount = 1 * 10**7 * 10**9;
-    uint256 private numTokensSellToAddToLiquidity = 1 * 10**6 * 10**9;
+    uint256 public _maxTxAmount = 1 * 10**6 * 10**9;
+    uint256 private numTokensSellToAddToLiquidity = 1 * 10**5 * 10**9;
 
     event MinTokensBeforeSwapUpdated(uint256 minTokensBeforeSwap);
     event SwapAndLiquifyEnabledUpdated(bool enabled);
@@ -128,16 +128,6 @@ contract UnitySwap is Context, IERC20, Ownable {
     function transferFrom(address sender, address recipient, uint256 amount) public override returns (bool) {
         _transfer(sender, recipient, amount);
         _approve(sender, _msgSender(), _allowances[sender][_msgSender()].sub(amount, "ERC20: transfer amount exceeds allowance"));
-        return true;
-    }
-
-    function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) {
-        _approve(_msgSender(), spender, _allowances[_msgSender()][spender].add(addedValue));
-        return true;
-    }
-
-    function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns (bool) {
-        _approve(_msgSender(), spender, _allowances[_msgSender()][spender].sub(subtractedValue, "ERC20: decreased allowance below zero"));
         return true;
     }
 
@@ -340,30 +330,29 @@ contract UnitySwap is Context, IERC20, Ownable {
 
     function calculateTaxFee(uint256 _amount) private view returns (uint256) {
         return _amount.mul(_taxFee).div(
-            10**5
+            10**4
         );
     }
 
     function calculateLiquidityFee(uint256 _amount) private view returns (uint256) {
         return _amount.mul(_liquidityFee).div(
-            10**5
+            10**4
         );
     }
 
     function calculateCharityFee(uint256 _amount) private view returns (uint256) {
         return _amount.mul(_charityFee).div(
-            10**5
+            10**4
         );
     }
 
     function calculateFoundationFee(uint256 _amount) private view returns (uint256) {
         return _amount.mul(_foundationFee).div(
-            10**5
+            10**4
         );
     }
 
     function removeAllFee() private {
-        if(_taxFee == 0 && _liquidityFee == 0 && _charityFee == 0 && _foundationFee == 0) return;
 
         _previousTaxFee = _taxFee;
         _previousLiquidityFee = _liquidityFee;
@@ -413,11 +402,6 @@ contract UnitySwap is Context, IERC20, Ownable {
         // also, don't get caught in a circular liquidity event.
         // also, don't swap & liquify if sender is uniswap pair.
         uint256 contractTokenBalance = balanceOf(address(this));
-
-        if(contractTokenBalance >= _maxTxAmount)
-        {
-            contractTokenBalance = _maxTxAmount;
-        }
 
         bool overMinTokenBalance = contractTokenBalance >= numTokensSellToAddToLiquidity;
         if (
@@ -508,8 +492,6 @@ contract UnitySwap is Context, IERC20, Ownable {
             _transferStandard(sender, recipient, amount);
         } else if (_isExcluded[sender] && _isExcluded[recipient]) {
             _transferBothExcluded(sender, recipient, amount);
-        } else {
-            _transferStandard(sender, recipient, amount);
         }
 
         if(!takeFee)

@@ -45,7 +45,7 @@ contract Amnesty is Context, IERC20, Ownable {
     address public _foundationWallet = address(0x123);
     address public _charityWallet = address(0x456);
 
-    uint256 public _maxTxAmount = 5 * 10**5 * 10**9;
+    uint256 public _maxTxAmount = 5 * 10**4 * 10**9;
 
     constructor () {
         _rOwned[_msgSender()] = _rTotal;
@@ -105,16 +105,6 @@ contract Amnesty is Context, IERC20, Ownable {
     function transferFrom(address sender, address recipient, uint256 amount) public override returns (bool) {
         _transfer(sender, recipient, amount);
         _approve(sender, _msgSender(), _allowances[sender][_msgSender()].sub(amount, "ERC20: transfer amount exceeds allowance"));
-        return true;
-    }
-
-    function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) {
-        _approve(_msgSender(), spender, _allowances[_msgSender()][spender].add(addedValue));
-        return true;
-    }
-
-    function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns (bool) {
-        _approve(_msgSender(), spender, _allowances[_msgSender()][spender].sub(subtractedValue, "ERC20: decreased allowance below zero"));
         return true;
     }
 
@@ -293,19 +283,19 @@ contract Amnesty is Context, IERC20, Ownable {
 
     function calculateTaxFee(uint256 _amount) private view returns (uint256) {
         return _amount.mul(_taxFee).div(
-            10**5
+            10**4
         );
     }
 
     function calculateCharityFee(uint256 _amount) private view returns (uint256) {
         return _amount.mul(_charityFee).div(
-            10**5
+            10**4
         );
     }
 
     function calculateFoundationFee(uint256 _amount) private view returns (uint256) {
         return _amount.mul(_foundationFee).div(
-            10**5
+            10**4
         );
     }
 
